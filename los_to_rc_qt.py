@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QGridLayout,
     QPushButton,
+    QFileDialog,
 )
 
 from OpenFile import OpenFile
@@ -106,7 +107,8 @@ def los_to_rc(data, slit, gal_frame, inclination, sys_vel,
 
     data['Circular_v'] = -vel_r
     data['Circular_v_err'] = vel_r_err
-    data['R'] = R_slit / u.parsec
+    data['R_pc'] = R_slit / u.parsec
+    data['R_arcsec'] = Separation.to(u.arcsec) / u.arcsec
     data['mask1'] = np.array(first_side_mask, dtype=bool)
     data['mask2'] = np.array(second_side_mask, dtype=bool)
 
@@ -214,7 +216,7 @@ class csvPlot():
             mask1, mask2 = mask
             if len(mask1[mask1]) > 0:
                 self.axes_plot.errorbar(
-                    dat['R'][mask1],
+                    dat['R_pc'][mask1],
                     dat['Circular_v'][mask1],
                     yerr=verr[mask1],
                     linestyle='',
@@ -222,7 +224,7 @@ class csvPlot():
                     color=self.colors[i])
             if len(mask2[mask2]) > 0:
                 self.axes_plot.errorbar(
-                    dat['R'][mask2],
+                    dat['R_pc'][mask2],
                     dat['Circular_v'][mask2],
                     yerr=verr[mask2],
                     linestyle='',
@@ -378,12 +380,16 @@ class PlotWidget(QWidget):
     def save_rc(self):
         filenames = self.csv_field.return_filenames()
         dataframes = self.csvGraph.return_rc()
+        regexps = "CSV (*.csv)"
         for fname, dat in zip(filenames, dataframes):
-            fname = ''.join(fname.split('.')[:-1]) + '_rc.csv'
-            print('Saving ', fname)
-            dat[['position', 'velocity', 'v_err', 'sigma_v', 'sigma_v_err',
-                 'flux', 'flux_err', 'RA', 'DEC', 'Circular_v',
-                 'Circular_v_err', 'R', 'mask1', 'mask2']].to_csv(fname)
+            fname_temp = '.'.join(fname.split('.')[:-1]) + '_rc.csv'
+            file_path = QFileDialog.getSaveFileName(self,
+                                                    "Save rotation curve",
+                                                    fname_temp,
+                                                    regexps)[0]
+            print('Saving ', file_path)
+            dat[['position', 'RA', 'DEC', 'Circular_v', 'Circular_v_err',
+                 'R_pc', 'R_arcsec', 'mask1', 'mask2']].to_csv(file_path)
 
     def updateValues(self):
         self.inclination = self.i_input.value() * u.deg
