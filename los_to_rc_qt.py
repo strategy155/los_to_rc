@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QPushButton,
     QFileDialog,
+    QCheckBox,
 )
 
 from OpenFile import OpenFile
@@ -47,7 +48,7 @@ def plot_slit_points(ax, rel_slit, masks=None, gal_frame=None, line=None):
                     linestyle='', transform=ax.get_transform(gal_frame))
 
 
-def los_to_rc(data, slit, gal_frame, inclination, sys_vel,
+def los_to_rc(data, slit, gal_frame, inclination, sys_vel, dist,
               obj_name=None, verr_lim=200):
     '''
     data - pd.DataFrame
@@ -58,13 +59,14 @@ def los_to_rc(data, slit, gal_frame, inclination, sys_vel,
     obj_name - str
     verr_lim - float
     '''
-    H0 = 70 / (1e+6 * u.parsec)
+    # H0 = 70 / (1e+6 * u.parsec)
     slit_pos = data['position']
 
     gal_center = SkyCoord(0 * u.deg, 0 * u.deg, frame=gal_frame)
     rel_slit = slit.transform_to(gal_frame)
 
-    dist = sys_vel / H0
+    dist = dist * 1000000 * u.parsec
+    # dist = sys_vel / H0
     # Исправляем за наклон галактики
     rel_slit_corr = SkyCoord(rel_slit.lon / np.cos(inclination), rel_slit.lat,
                              frame=gal_frame)
@@ -198,11 +200,13 @@ class csvPlot():
                                        unit=(u.hourangle, u.deg)))
         self.axes_plot = figure.subplots()
 
-    def calc_rc(self, gal_frame, inclination, sys_vel):
+    def calc_rc(self, gal_frame, inclination, sys_vel, dist=None):
+        if dist is None:
+            dist = sys_vel / 70.
         self.axes_plot.clear()
         self.masks = []
         for dat, slit in zip(self.data, self.slits):
-            dat = los_to_rc(dat, slit, gal_frame, inclination, sys_vel)
+            dat = los_to_rc(dat, slit, gal_frame, inclination, sys_vel, dist)
             self.masks.append([dat['mask1'].to_numpy(),
                                dat['mask2'].to_numpy()])
         self.plot_rc()
@@ -279,8 +283,18 @@ class PlotWidget(QWidget):
 
         self.vel_input = QDoubleSpinBox()
         self.vel_input.setKeyboardTracking(False)
+        self.vel_input.setSuffix('km/s')
         self.vel_input.setMaximum(500000)
         self.vel_input.setValue(velocity)
+
+        self.dist_input = QDoubleSpinBox()
+        self.dist_input.setKeyboardTracking(False)
+        self.dist_input.setSuffix('Mpc')
+        self.dist_input.setValue(velocity / 70)
+        self.dist_input.setSingleStep(0.1)
+        self.dist_input.setDisabled(False)
+        self.dist_checkbox = QCheckBox('Calculate from velocity')
+        self.dist_checkbox.setToolTip('Assuming H0=70km/s/Mpc')
 
         self.redraw_button = QPushButton(text='Redraw')
         self.saveres_button = QPushButton(text='Save Results')
@@ -299,6 +313,7 @@ class PlotWidget(QWidget):
         right_layout.addRow(self.image_field)
         right_layout.addRow('PA', self.PA_input)
         right_layout.addRow('DEC', self.dec_input)
+        right_layout.addRow(self.dist_checkbox, self.dist_input)
         right_layout.addRow(button_layout)
 
         glayout = QGridLayout()
@@ -323,7 +338,9 @@ class PlotWidget(QWidget):
         self.dec_input.valueChanged.connect(self.galFrameChanged)
         self.vel_input.valueChanged.connect(self.kinematicsChanged)
         self.i_input.valueChanged.connect(self.kinematicsChanged)
+        self.dist_input.valueChanged.connect(self.kinematicsChanged)
         self.saveres_button.clicked.connect(self.save_rc)
+        self.dist_checkbox.stateChanged.connect(self.kinematicsChanged)
 
     @Slot()
     def galChanged(self):
@@ -332,6 +349,14 @@ class PlotWidget(QWidget):
     @Slot()
     def csvChanged(self):
         self.csv_changed = True
+
+    @Slot()
+    def calc_dist(self):
+        if self.dist_checkbox.isChecked():
+            self.dist_input.setValue(self.vel_input.value() / 70.)
+            self.dist_input.setDisabled(True)
+        else:
+            self.dist_input.setDisabled(False)
 
     @Slot()
     def galFrameChanged(self):
@@ -346,7 +371,8 @@ class PlotWidget(QWidget):
     @Slot()
     def kinematicsChanged(self):
         self.updateValues()
-        self.csvGraph.calc_rc(self.gal_frame, self.inclination, self.sys_vel)
+        self.csvGraph.calc_rc(self.gal_frame, self.inclination, self.sys_vel,
+                              self.dist)
         self.plot_fig.draw()
 
     @Slot()
@@ -398,6 +424,9 @@ class PlotWidget(QWidget):
                                    self.dec_input.getAngle(),
                                    frame='icrs')
         self.sys_vel = self.vel_input.value()
+        self.calc_dist()
+        self.dist = self.dist_input.value()
+        print('DISTANCE', self.dist)
         self.gal_frame = self.gal_center.skyoffset_frame(rotation=self.PA)
 
 
