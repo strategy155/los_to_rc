@@ -121,7 +121,7 @@ $x'$ and $y'$ can be directly measured if we know the position angle of the majo
 and the coordinates of its center. I use *astropy* python package for this purpose.
 
 $`v'_z`$ can be calculated if we know line-of-sight velocity of the point $v_{los}$ and the velocity
-of the center of the galaxy $v_{sys}$: $v'_z = v_{los} - v_{sys}$
+of the center of the galaxy $v_{sys}$: $`v'_z = v_{los} - v_{sys}`$
 
 To calculate the rotation curve one needs to obtain $v$ and $R$ values of the set of points:
 
@@ -133,7 +133,7 @@ $tg {\alpha} = y/x = y'/(x' \cdot \cos{i})$
 
 $v = v_y/\cos{\alpha} = v'_z/(\sin{i} \cdot \cos{\alpha})$
 
-$R = \sqrt{x^2 + y^2} = \sqrt{x'^2 + y'^2/\cos^2\alpha}$
+$R = \sqrt{x^2 + y^2} = \sqrt{x'^2 + y'^2/\cos^2 i}$
 
 
 
