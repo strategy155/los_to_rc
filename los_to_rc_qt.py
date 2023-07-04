@@ -60,7 +60,10 @@ def los_to_rc(data, slit, gal_frame, inclination, sys_vel, dist,
     verr_lim - float
     '''
     # H0 = 70 / (1e+6 * u.parsec)
-    slit_pos = data['position']
+    if 'position' in data:
+        slit_pos = data['position']
+    else:
+        slit_pos = slit.separation(slit[0]).to(u.arcsec)
 
     gal_center = SkyCoord(0 * u.deg, 0 * u.deg, frame=gal_frame)
     rel_slit = slit.transform_to(gal_frame)
@@ -81,7 +84,10 @@ def los_to_rc(data, slit, gal_frame, inclination, sys_vel, dist,
     slit_gal_PA = gal_frame_center.position_angle(rel_slit_corr)
 
     vel_lon = (data['velocity'].to_numpy() - sys_vel) / np.sin(inclination)
-    vel_lon_err = np.abs(data['v_err'].to_numpy() / np.sin(inclination))
+    if 'v_err' in data:
+        vel_lon_err = np.abs(data['v_err'].to_numpy() / np.sin(inclination))
+    else:
+        vel_lon_err = data['velocity'].to_numpy() * 0
 
     vel_r = vel_lon / np.cos(slit_gal_PA)
     vel_r_err = np.abs(vel_lon_err / np.cos(slit_gal_PA))
@@ -414,7 +420,7 @@ class PlotWidget(QWidget):
                                                     fname_temp,
                                                     regexps)[0]
             print('Saving ', file_path)
-            dat[['position', 'RA', 'DEC', 'Circular_v', 'Circular_v_err',
+            dat[['RA', 'DEC', 'Circular_v', 'Circular_v_err',
                  'R_pc', 'R_arcsec', 'mask1', 'mask2']].to_csv(file_path)
 
     def updateValues(self):
