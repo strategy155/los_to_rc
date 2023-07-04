@@ -26,7 +26,7 @@ chmod a+x los_to_rc.py
 ## Usage
 
  <p align="center">
-  <img src="images/Example.png" width="65%" alt="Example">
+  <img src="images/Example.png" width="100%" alt="Example">
 </p>
 
 To use this program one needs to prepare a CSV file with measured line of sight
@@ -120,7 +120,7 @@ The coordinates of those vectors in the *observed* coordinate system are:
 $x'$ and $y'$ can be directly measured if we know the position angle of the major axis of a galaxy
 and the coordinates of its center. I use *astropy* python package for this purpose.
 
-$v'_z$ can be calculated if we know line-of-sight velocity of the point $v_{los}$ and the velocity
+$`v'_z`$ can be calculated if we know line-of-sight velocity of the point $v_{los}$ and the velocity
 of the center of the galaxy $v_{sys}$: $v'_z = v_{los} - v_{sys}$
 
 To calculate the rotation curve one needs to obtain $v$ and $R$ values of the set of points:
