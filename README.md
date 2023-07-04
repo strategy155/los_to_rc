@@ -20,7 +20,7 @@ Then you can clone this repository in any folder and make the main script execut
 ```
 git clone https://github.com/CosmicHitchhiker/los_to_rc.git
 cd los_to_rc
-chmod a+x los_to_rc.py
+chmod a+x los_to_rc_qt.py
 ```
 
 ## Usage
