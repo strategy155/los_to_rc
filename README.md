@@ -33,6 +33,10 @@ To use this program one needs to prepare a CSV file with measured line of sight
 velocities and coordinates of points at which those velocities were measured.
 The CSV file should contain next columns:
 
+| velocity | RA | DEC | v_err |
+|----------|----|-----|-------|
+, where:
+
  - _velocity_ : measured line of sight velocity (km/s)
  - _RA_ : Right Accession of every point (HH:MM:SS.SS - hour angle)
  - _DEC_ : Declination of every point (DD:MM:SS.SS - degrees)
