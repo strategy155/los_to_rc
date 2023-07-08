@@ -44,7 +44,7 @@ The CSV file should contain next columns:
 
 Run the script:
 
-`./los_to_rc.py`
+`./los_to_rc_qt.py`
 
 Now you should fill in all of the fields at the bottom of the window.
  - **csv** (upper left) : full path to a CSV file with velocity and coordinates data.
