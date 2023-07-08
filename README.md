@@ -49,7 +49,7 @@ Run the script:
 Now you should fill in all of the fields at the bottom of the window.
  - **csv** (upper left) : full path to a CSV file with velocity and coordinates data.
  You can add several CSV files, in this case, their paths should be comma-separated.
- - **image** (upper right) : full path to a fits-file with an image of a galaxy you work with.
+ - **image** (upper right) : full path to a [fits](https://fits.gsfc.nasa.gov/)-file with an image of a galaxy you work with.
  - **i** : inclination angle (degrees), an angle between the picture plane and the plane of a galaxy disc.
  - **PA** : position angle of the major axis of a galaxy (degrees).
  In case of negative circular velocity values, you should add 180 to the value of PA.
