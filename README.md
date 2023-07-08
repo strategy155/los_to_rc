@@ -46,6 +46,8 @@ Run the script:
 
 `./los_to_rc_qt.py`
 
+![](/home/parf/projects/los_to_rc/images/parameters.png)
+
 Now you should fill in all of the fields at the bottom of the window.
  - **csv** (upper left) : full path to a CSV file with velocity and coordinates data.
  You can add several CSV files, in this case, their paths should be comma-separated.
