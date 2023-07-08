@@ -38,8 +38,8 @@ The CSV file should contain next columns:
 , where:
 
  - _velocity_ : measured line of sight velocity (km/s)
- - _RA_ : Right Accession of every point (HH:MM:SS.SS - hour angle)
- - _DEC_ : Declination of every point (DD:MM:SS.SS - degrees)
+ - _RA_ : Right Accession of every point (`HH:MM:SS.SS` - hour angle)
+ - _DEC_ : Declination of every point (`DD:MM:SS.SS` - degrees)
  - _v_err_ : velocity error (km/s), OPTIONAL
 
 Run the script:
